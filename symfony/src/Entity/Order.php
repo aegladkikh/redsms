@@ -36,6 +36,11 @@ class Order
      */
     private $product;
 
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private bool $status = false;
+
     public function __construct()
     {
         $this->client = new ArrayCollection();
@@ -91,6 +96,18 @@ class Order
     public function removeProduct(Product $product): self
     {
         $this->product->removeElement($product);
+
+        return $this;
+    }
+
+    public function getStatus(): ?bool
+    {
+        return $this->status;
+    }
+
+    public function setStatus(bool $status): self
+    {
+        $this->status = $status;
 
         return $this;
     }

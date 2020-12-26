@@ -42,6 +42,7 @@ class AppFixtures extends Fixture
         $order = new Order();
         $order->setName('Супер заказ');
         $order->setClient($client);
+        $order->setStatus(false);
         $order->addProduct($product1);
         $order->addProduct($product2);
         $client->addOrder($order);

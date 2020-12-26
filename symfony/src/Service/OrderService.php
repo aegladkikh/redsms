@@ -25,15 +25,19 @@ class OrderService
 
     public function getAllOrders(): array
     {
-        return $this->orderRepository->findAll();
+        return $this->orderRepository->findBy(['status' => false]);
     }
 
     public function pay(int $orderId, array $product): void
     {
         $em = $this->managerRegistry->getManager();
-        $findOrder = $this->orderRepository->find($orderId);
+        $order = $this->orderRepository->find($orderId);
 
-        foreach ($findOrder->getProduct() as $itemProduct) {
+        if (!$order) {
+            throw new RuntimeException('Не найден заказ:' . $order->getName());
+        }
+
+        foreach ($order->getProduct() as $itemProduct) {
             $invoiceProduct = current($product[$itemProduct->getId()]);
 
             $invoice = $this->invoiceRepository->find($invoiceProduct);
@@ -49,6 +53,11 @@ class OrderService
 
             $em->persist($invoice);
         }
+
+        $order->setStatus(true);
+
+        $em->persist($order);
+
         $em->flush();
     }
 }
