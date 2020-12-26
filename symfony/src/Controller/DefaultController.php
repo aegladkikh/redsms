@@ -51,16 +51,14 @@ class DefaultController extends AbstractController
         $orderId = (int)$request->request->get('order');
         $productInvoice = $request->request->get('product');
 
-        $html = '<html lang="ru"><body><div style="color: green;">Успешно оплатили</div></body></html>';
-
         try {
             $this->orderService->pay($orderId, $productInvoice);
         } catch (Throwable $e) {
-            $html = '<div style="color: red;">' . $e->getMessage() . '</div>';
+            return $this->render('fail.pay.html.twig', ['error' => $e->getMessage()]);
         }
 
         // TODO Если нет ошибок можно отправить сообщение об успешном заказе
 
-        return new Response('<html lang="ru"><body>' . $html . ' <a href="/">Вернуться назад</a></body></html>');
+        return $this->render('success.pay.html.twig');
     }
 }
