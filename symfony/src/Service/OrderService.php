@@ -33,7 +33,7 @@ class OrderService
     public function pay(int $orderId, array $product): void
     {
         $em = $this->managerRegistry->getManager();
-        $order = $this->orderRepository->find($orderId);
+        $order = current($this->orderRepository->findBy(['id' => $orderId, 'status' => false])) ?? [];
 
         if (!$order) {
             throw new RuntimeException('Не найден заказ: ' . $order->getName() . '.');
