@@ -36,12 +36,12 @@ class DefaultController extends AbstractController
         $orderId = $request->request->get('order');
         $productInvoice = $request->request->get('product');
 
-        $html = '<html lang="ru"><body>Успешно оплатили</body></html>';
+        $html = '<html lang="ru"><body><div style="color: green;">Успешно оплатили</div></body></html>';
 
         try {
             $this->orderService->pay($orderId, $productInvoice);
         } catch (Throwable $e) {
-            $html = $e->getMessage();
+            $html = '<div style="color: red;">' . $e->getMessage() . '</div>';
         }
 
         return new Response($html);
