@@ -44,6 +44,6 @@ class DefaultController extends AbstractController
             $html = '<div style="color: red;">' . $e->getMessage() . '</div>';
         }
 
-        return new Response($html);
+        return new Response($html . ' <a href="/">Вернуться назад</a>');
     }
 }
