@@ -44,6 +44,8 @@ class DefaultController extends AbstractController
             $html = '<div style="color: red;">' . $e->getMessage() . '</div>';
         }
 
+        // TODO Если нет ошибок можно отправить сообщение об успешном заказе
+
         return new Response($html . ' <a href="/">Вернуться назад</a>');
     }
 }
