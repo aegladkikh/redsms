@@ -36,7 +36,11 @@ class OrderService
         $order = $this->orderRepository->find($orderId);
 
         if (!$order) {
-            throw new RuntimeException('Не найден заказ:' . $order->getName() . '.');
+            throw new RuntimeException('Не найден заказ: ' . $order->getName() . '.');
+        }
+
+        if ($order->getProduct()->count() === 0) {
+            throw new RuntimeException('В заказ не добавлены продукты.');
         }
 
         foreach ($order->getProduct() as $itemProduct) {
