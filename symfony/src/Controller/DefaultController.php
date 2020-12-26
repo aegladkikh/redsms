@@ -1,8 +1,11 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Repository\ClientRepository;
+use App\Repository\InvoiceRepository;
 use App\Service\OrderService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -20,12 +23,23 @@ class DefaultController extends AbstractController
     }
 
     #[Route('/')]
-    public function index(): Response
-    {
+    public function index(
+        ClientRepository $clientRepository,
+        InvoiceRepository $invoiceRepository
+    ): Response {
+        $client = current($clientRepository->findAll()) ?? [];
+
+        if (!$client) {
+            throw $this->createNotFoundException('Не найден клиент.');
+        }
+
+
         return $this->render(
             'index.html.twig',
             [
-                'orders' => $this->orderService->getAllOrders()
+                'client' => $client,
+                'invoice' => $invoiceRepository->findBy(['client' => $client->getId()]) ?? [],
+                'orders' => $this->orderService->findOrdersForClient($client->getId()) ?? []
             ]
         );
     }
@@ -34,7 +48,7 @@ class DefaultController extends AbstractController
     public function pay(
         Request $request
     ): Response {
-        $orderId = $request->request->get('order');
+        $orderId = (int)$request->request->get('order');
         $productInvoice = $request->request->get('product');
 
         $html = '<html lang="ru"><body><div style="color: green;">Успешно оплатили</div></body></html>';

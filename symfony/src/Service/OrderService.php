@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Service;
@@ -24,9 +25,9 @@ class OrderService
         $this->invoiceRepository = $invoiceRepository;
     }
 
-    public function getAllOrders(): array
+    public function findOrdersForClient($clientId): array
     {
-        return $this->orderRepository->findBy(['status' => false]);
+        return $this->orderRepository->findBy(['client' => $clientId, 'status' => false]);
     }
 
     public function pay(int $orderId, array $product): void

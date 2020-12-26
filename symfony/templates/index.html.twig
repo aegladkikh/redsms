@@ -1,13 +1,31 @@
 {% extends 'base.html.twig' %}
 {% block body %}
 
+    <p>Имя клиента: {{ client.name }}</p>
+
+    <div>
+        <p>Доступные счета</p>
+        <table border="1">
+            <tr>
+                <th>Наименование</th>
+                <th>Баланс</th>
+            </tr>
+            {% for _invoice in invoice %}
+                <tr>
+                    <td>{{ _invoice.name }}</td>
+                    <td>{{ _invoice.balance }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    <p>Заказы: </p>
     {% if orders|length > 0 %}
         {% for order in orders %}
             {% set sum = 0 %}
             <form action="/pay" method="post">
                 <h1>Заказ: {{ order.name }}</h1>
                 <div>
-                    <p>Имя клиента: {{ order.client.name }}</p>
                     <div>
                         <h3>Состав заказа</h3>
                         <table border="1">
