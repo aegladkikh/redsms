@@ -23,7 +23,7 @@ services:
       POSTGRES_PASSWORD: test1
       POSTGRES_DB: redsms
     volumes:
-      - redsms:/var/lib/postgresql/data
+      - redsms1:/var/lib/postgresql/data
     ports:
       - 5432:5432
     networks:
@@ -32,4 +32,4 @@ networks:
   main:
 
 volumes:
-  redsms:
+  redsms1:

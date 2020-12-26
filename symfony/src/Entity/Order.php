@@ -100,7 +100,7 @@ class Order
         return $this;
     }
 
-    public function getStatus(): ?bool
+    public function getStatus(): bool
     {
         return $this->status;
     }
