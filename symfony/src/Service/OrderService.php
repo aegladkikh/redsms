@@ -34,17 +34,21 @@ class OrderService
         $order = $this->orderRepository->find($orderId);
 
         if (!$order) {
-            throw new RuntimeException('Не найден заказ:' . $order->getName());
+            throw new RuntimeException('Не найден заказ:' . $order->getName() . '.');
         }
 
         foreach ($order->getProduct() as $itemProduct) {
-            $invoiceProduct = current($product[$itemProduct->getId()]);
+            $invoiceProduct = current($product[$itemProduct->getId()] ?? []);
+
+            if (count($invoiceProduct) === 0) {
+                throw new RuntimeException('Не найден счет.');
+            }
 
             $invoice = $this->invoiceRepository->find($invoiceProduct);
             $invoiceBalance = $invoice->getBalance();
 
             if ($invoiceBalance < $itemProduct->getPrice()) {
-                throw new RuntimeException('Не достаточно средств на счете: ' . $invoice->getName());
+                throw new RuntimeException('Не достаточно средств на счете: ' . $invoice->getName() . '.');
             }
 
             $setBalance = $invoiceBalance - $itemProduct->getPrice();
