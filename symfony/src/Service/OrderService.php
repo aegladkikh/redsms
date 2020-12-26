@@ -67,7 +67,6 @@ class OrderService
         $order->setStatus(true);
 
         $em->persist($order);
-
         $em->flush();
     }
 }
