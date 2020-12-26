@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Controller;
 
@@ -46,6 +47,6 @@ class DefaultController extends AbstractController
 
         // TODO Если нет ошибок можно отправить сообщение об успешном заказе
 
-        return new Response($html . ' <a href="/">Вернуться назад</a>');
+        return new Response('<html lang="ru"><body>' . $html . ' <a href="/">Вернуться назад</a></body></html>');
     }
 }
