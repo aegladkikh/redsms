@@ -12,7 +12,11 @@ comi:
 	docker-compose run --rm php composer install
 comu:
 	docker-compose run --rm php composer update
-install:
-	docker-compose run --rm php php bin/console doctrine:database:create && docker-compose run --rm php php bin/console doctrine:migrations:migrate && docker-compose run --rm php php bin/console doctrine:fixtures:load
+m1:
+	docker-compose run --rm php php bin/console make:migration
+m2:
+	docker-compose run --rm php php bin/console doctrine:migrations:migrate
 fixture:
 	docker-compose run --rm php php bin/console doctrine:fixtures:load
+entity:
+	docker-compose run --rm php php bin/console make:entity

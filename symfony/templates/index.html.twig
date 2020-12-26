@@ -1,4 +1,49 @@
 {% extends 'base.html.twig' %}
 {% block body %}
-    hi
+
+    {% if orders|length > 0 %}
+        {% for order in orders %}
+            {% set sum = 0 %}
+            <form action="/pay" method="post">
+                <h1>Заказ: {{ order.name }}</h1>
+                <div>
+                    <p>Имя клиента: {{ order.client.name }}</p>
+                    <div>
+                        <h3>Состав заказа</h3>
+                        <table>
+                            <tr>
+                                <th>Наименование</th>
+                                <th>Цена</th>
+                                <th>Счет для оплаты</th>
+                            </tr>
+                            {% for product in  order.product %}
+                                {% set sum = sum + product.price %}
+                                <tr>
+                                    <td>{{ product.name }}</td>
+                                    <td>{{ product.price }}</td>
+                                    <td>
+                                        <select name='product[{{ product.id }}][invoice]'>
+                                            {% for invoice in order.client.invoice %}
+                                                <option value="{{ invoice.id }}">{{ invoice.name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </table>
+                    </div>
+
+                    <div>Сумма заказа: {{ sum }}</div>
+                </div>
+
+                <input type="hidden" value="{{ order.id }}" name="order">
+
+                <div>
+                    <button type="submit">Оплатить</button>
+                </div>
+            </form>
+        {% endfor %}
+    {% else %}
+        <div>Нет заказов</div>
+    {% endif %}
 {% endblock %}
