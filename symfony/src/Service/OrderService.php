@@ -47,8 +47,8 @@ class OrderService
         $statusPay = false;
         foreach ($order->getClient()->getInvoice() as $invoice) {
             if ($invoice->getBalance() >= $sum) {
-                $sum = $invoice->getBalance() - $sum;
-                $invoice->setBalance($sum);
+                $residue = $invoice->getBalance() - $sum;
+                $invoice->setBalance($residue);
                 $em->persist($invoice);
                 $statusPay = true;
                 break;
