@@ -35,30 +35,22 @@ class OrderService
             throw new RuntimeException('Не найден заказ.');
         }
 
-        $sum = 0;
         foreach ($order->getProduct() as $itemProduct) {
-            $sum += $itemProduct->getPrice();
-        }
+            $sum = $itemProduct->getPrice();
 
-        $statusPay = false;
-        foreach ($order->getClient()->getInvoice() as $invoice) {
-            if ($invoice->getBalance() >= $sum) {
-                $residue = $invoice->getBalance() - $sum;
-                $invoice->setBalance($residue);
-                $em->persist($invoice);
-                $statusPay = true;
-                break;
+            $statusPay = false;
+            foreach ($order->getClient()->getInvoice() as $invoice) {
+                if ($invoice->getBalance() >= $sum) {
+                    $invoice->setBalance($invoice->getBalance() - $sum);
+                    $em->persist($invoice);
+                    $statusPay = true;
+                    break;
+                }
             }
 
-            if ($invoice->getBalance() < $sum) {
-                $sum -= $invoice->getBalance();
-                $invoice->setBalance(0);
-                $em->persist($invoice);
+            if (!$statusPay) {
+                throw new RuntimeException('Не достаточно средств.');
             }
-        }
-
-        if (!$statusPay) {
-            throw new RuntimeException('Не достаточно средств.');
         }
 
         $order->setStatus(true);
