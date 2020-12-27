@@ -6,18 +6,19 @@ namespace App\Service;
 
 use App\Repository\OrderRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\Persistence\ObjectManager;
 use RuntimeException;
 
 class OrderService
 {
-    private ManagerRegistry $managerRegistry;
+    private ObjectManager $em;
     private OrderRepository $orderRepository;
 
     public function __construct(
         ManagerRegistry $managerRegistry,
         OrderRepository $orderRepository
     ) {
-        $this->managerRegistry = $managerRegistry;
+        $this->em = $managerRegistry->getManager();
         $this->orderRepository = $orderRepository;
     }
 
@@ -28,7 +29,6 @@ class OrderService
 
     public function pay(int $orderId): void
     {
-        $em = $this->managerRegistry->getManager();
         $order = $this->orderRepository->findOneBy(['id' => $orderId, 'status' => false]);
 
         if (!$order) {
@@ -42,20 +42,20 @@ class OrderService
             foreach ($order->getClient()->getInvoice() as $invoice) {
                 if ($invoice->getBalance() >= $sum) {
                     $invoice->setBalance($invoice->getBalance() - $sum);
-                    $em->persist($invoice);
+                    $this->em->persist($invoice);
                     $statusPay = true;
                     break;
                 }
             }
 
             if (!$statusPay) {
-                throw new RuntimeException('Не достаточно средств.');
+                throw new RuntimeException('Не достаточно средств для оплаты товара: ' . $itemProduct->getName());
             }
         }
 
         $order->setStatus(true);
 
-        $em->persist($order);
-        $em->flush();
+        $this->em->persist($order);
+        $this->em->flush();
     }
 }
