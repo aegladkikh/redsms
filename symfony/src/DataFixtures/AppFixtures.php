@@ -20,19 +20,23 @@ class AppFixtures extends Fixture
     {
         $product1 = new Product();
         $product1->setName('Продукт 1');
-        $product1->setPrice(200);
+        $product1->setPrice(1800);
 
         $product2 = new Product();
         $product2->setName('Продукт 2');
-        $product2->setPrice(100);
+        $product2->setPrice(1500);
+
+        $product3 = new Product();
+        $product3->setName('Продукт 3');
+        $product3->setPrice(1200);
 
         $invoice1 = new Invoice();
         $invoice1->setName('Счет 1');
-        $invoice1->setBalance(500);
+        $invoice1->setBalance(2000);
 
         $invoice2 = new Invoice();
         $invoice2->setName('Счет 2');
-        $invoice2->setBalance(1000);
+        $invoice2->setBalance(3000);
 
         $client = new Client();
         $client->setName('Jony Сache');
@@ -45,6 +49,7 @@ class AppFixtures extends Fixture
         $order->setStatus(false);
         $order->addProduct($product1);
         $order->addProduct($product2);
+        $order->addProduct($product3);
         $client->addOrder($order);
 
         $manager->persist($order);

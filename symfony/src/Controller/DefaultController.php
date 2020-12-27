@@ -48,16 +48,11 @@ class DefaultController extends AbstractController
     public function pay(
         Request $request
     ): Response {
-        $orderId = (int)$request->request->get('order');
-        $productInvoice = $request->request->get('product');
-
         try {
-            $this->orderService->pay($orderId, $productInvoice);
+            $this->orderService->pay((int)$request->request->get('order'));
         } catch (Throwable $e) {
             return $this->render('fail.pay.html.twig', ['error' => $e->getMessage()]);
         }
-
-        // TODO Если нет ошибок можно отправить сообщение об успешном заказе
 
         return $this->render('success.pay.html.twig');
     }

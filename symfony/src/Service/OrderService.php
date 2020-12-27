@@ -30,7 +30,7 @@ class OrderService
         return $this->orderRepository->findBy(['client' => $clientId, 'status' => false]);
     }
 
-    public function pay(int $orderId, array $product): void
+    public function pay(int $orderId): void
     {
         $em = $this->managerRegistry->getManager();
         $order = $this->orderRepository->findOneBy(['id' => $orderId, 'status' => false]);
@@ -39,29 +39,28 @@ class OrderService
             throw new RuntimeException('Не найден заказ.');
         }
 
-        if ($order->getProduct()->count() === 0) {
-            throw new RuntimeException('В заказ не добавлены продукты.');
+        $sum = 0;
+        foreach ($order->getProduct() as $itemProduct) {
+            $sum += $itemProduct->getPrice();
         }
 
-        foreach ($order->getProduct() as $itemProduct) {
-            $invoiceForProduct = current($product[$itemProduct->getId()] ?? []);
-
-            $invoice = $this->invoiceRepository->find($invoiceForProduct);
-            if (!$invoice) {
-                throw new RuntimeException('Не найден счет.');
+        foreach ($order->getClient()->getInvoice() as $invoice) {
+            if ($invoice->getBalance() >= $sum) {
+                $sum = $invoice->getBalance() - $sum;
+                $invoice->setBalance($sum);
+                $em->persist($invoice);
+                break;
             }
 
-            $invoiceBalance = $invoice->getBalance() ?? 0;
-
-            if ($invoiceBalance < $itemProduct->getPrice()) {
-                throw new RuntimeException('Не достаточно средств на счете: ' . $invoice->getName() . '.');
+            if ($invoice->getBalance() < $sum) {
+                $sum -= $invoice->getBalance();
+                $invoice->setBalance(0);
+                $em->persist($invoice);
             }
+        }
 
-            $setBalance = $invoiceBalance - $itemProduct->getPrice();
-
-            $invoice->setBalance($setBalance);
-
-            $em->persist($invoice);
+        if ($sum > 0) {
+            throw new RuntimeException('Не достаточно средств.');
         }
 
         $order->setStatus(true);
