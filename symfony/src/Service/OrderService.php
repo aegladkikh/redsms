@@ -44,11 +44,13 @@ class OrderService
             $sum += $itemProduct->getPrice();
         }
 
+        $statusPay = false;
         foreach ($order->getClient()->getInvoice() as $invoice) {
             if ($invoice->getBalance() >= $sum) {
                 $sum = $invoice->getBalance() - $sum;
                 $invoice->setBalance($sum);
                 $em->persist($invoice);
+                $statusPay = true;
                 break;
             }
 
@@ -59,7 +61,7 @@ class OrderService
             }
         }
 
-        if ($sum > 0) {
+        if (!$statusPay) {
             throw new RuntimeException('Не достаточно средств.');
         }
 
