@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Service;
 
-use App\Repository\InvoiceRepository;
 use App\Repository\OrderRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use RuntimeException;
@@ -13,16 +12,13 @@ class OrderService
 {
     private ManagerRegistry $managerRegistry;
     private OrderRepository $orderRepository;
-    private InvoiceRepository $invoiceRepository;
 
     public function __construct(
         ManagerRegistry $managerRegistry,
-        OrderRepository $orderRepository,
-        InvoiceRepository $invoiceRepository
+        OrderRepository $orderRepository
     ) {
         $this->managerRegistry = $managerRegistry;
         $this->orderRepository = $orderRepository;
-        $this->invoiceRepository = $invoiceRepository;
     }
 
     public function findOrdersForClient($clientId): array
